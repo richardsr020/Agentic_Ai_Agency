@@ -122,7 +122,8 @@ html[data-theme="light"] .select:hover{border-color:rgba(15,23,42,.20)}
 .agent-svg{
   width:min(440px, 100%);
   height:auto;
-  filter:drop-shadow(0 24px 60px rgba(0,0,0,.18));
+  filter:none;
+  opacity:.96;
   animation:svgFloat 5.6s var(--ease) infinite;
 }
 @keyframes svgFloat{0%{transform:translateY(0)}50%{transform:translateY(-10px)}100%{transform:translateY(0)}}
@@ -133,10 +134,10 @@ html[data-theme="light"] .select:hover{border-color:rgba(15,23,42,.20)}
   height:150px;
   border-radius:18px;
   border:0;
-  background:linear-gradient(135deg, rgba(91,140,255,.10), rgba(124,91,255,.06));
+  background:transparent;
   position:relative;
-  overflow:hidden;
-  box-shadow:var(--shadow);
+  overflow:visible;
+  box-shadow:none;
 }
 .illus-ring{
   position:absolute;
@@ -178,7 +179,7 @@ html[data-theme="light"] .illus-dots{background-image:radial-gradient(rgba(15,23
 
 .lead{font-size:17px; color:var(--muted); line-height:1.6; margin:0 0 18px}
 
-.cta-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+.cta-row{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:18px 0 6px}
 
 .btn{
   display:inline-flex;
@@ -225,8 +226,8 @@ html[data-theme="light"] .card:hover{border-color:rgba(15,23,42,.18)}
 .trust-card{border:1px solid var(--border); background:rgba(255,255,255,.04); padding:12px; border-radius:12px; color:var(--muted); font-size:13px}
 html[data-theme="light"] .trust-card{background:#fff}
 
-.hero-art{border:1px solid var(--border); background:rgba(255,255,255,.03); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
-html[data-theme="light"] .hero-art{background:#fff}
+.hero-art{border:0; background:transparent; border-radius:0; padding:0; box-shadow:none}
+html[data-theme="light"] .hero-art{background:transparent}
 
 .hero-illus{position:relative; height:460px}
 .hero-svg{
@@ -238,10 +239,11 @@ html[data-theme="light"] .hero-art{background:#fff}
   opacity:0;
   transform:translateY(10px) scale(.98);
   transition:opacity 520ms var(--ease), transform 720ms var(--ease);
-  filter:drop-shadow(0 26px 70px rgba(0,0,0,.22));
+  filter:none;
+  mix-blend-mode:normal;
   pointer-events:none;
 }
-.hero-svg.is-active{opacity:1; transform:translateY(0) scale(1); animation:heroFloat 6.8s var(--ease) infinite}
+.hero-svg.is-active{opacity:.96; transform:translateY(0) scale(1); animation:heroFloat 6.8s var(--ease) infinite}
 @keyframes heroFloat{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1)}100%{transform:translateY(0) scale(1)}}
 
 /* Flat cards */

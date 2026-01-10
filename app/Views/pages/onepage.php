@@ -33,6 +33,7 @@ use App\Core\View;
     'title' => 'Agent IA de Service Client',
     'subtitle' => '(AI Customer Support Agent)',
     'image' => '/assets/images/support_Agent.svg',
+    'detailsUrl' => '/agent-support',
     'bullets' => [
       'Répond aux emails, chats, WhatsApp',
       'Gère les demandes clients 24/7',
@@ -46,6 +47,7 @@ use App\Core\View;
     'title' => 'Agent IA de Prise de Rendez-vous',
     'subtitle' => '(AI Appointment Scheduling Agent)',
     'image' => '/assets/images/book_metting.svg',
+    'detailsUrl' => '/agent-scheduling',
     'bullets' => [
       'Qualifie les demandes entrantes',
       'Propose et confirme des créneaux automatiquement',
@@ -59,18 +61,13 @@ use App\Core\View;
     'title' => 'Agent IA de Prospection & Qualification',
     'subtitle' => '(AI Sales & Prospecting Agent)',
     'image' => '/assets/images/customer_seeker.svg',
+    'detailsUrl' => '/agent-prospecting',
+    'showBookCall' => true,
     'bullets' => [
       'Identifie les prospects idéaux',
       'Contacte de manière personnalisée (LinkedIn, email)',
       'Qualifie les leads intelligemment',
       'Alimente le pipeline commercial sans spam',
     ],
-  ]) ?>
-
-  <?= View::partial('partials/contact-section', [
-    'id' => 'contact',
-    'page' => $pages['contact'] ?? [],
-    'error' => $error ?? null,
-    'success' => $success ?? null,
   ]) ?>
 </article>

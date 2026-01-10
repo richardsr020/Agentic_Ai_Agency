@@ -35,6 +35,7 @@ $metaDescription = $page['meta_description'] ?? ($metaDescription ?? '');
       <?= $content ?? '' ?>
     </div>
   </main>
+  <?= App\Core\View::partial('partials/chat-modal') ?>
   <?= App\Core\View::partial('partials/footer') ?>
   <script src="/assets/app.js" defer></script>
 </body>

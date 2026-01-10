@@ -30,7 +30,7 @@ $labels = [
       <a href="/#agent-support" class="nav-link">Service Client</a>
       <a href="/#agent-scheduling" class="nav-link">Rendez-vous</a>
       <a href="/#agent-prospecting" class="nav-link">Prospection</a>
-      <a href="/#contact" class="nav-link nav-cta">Devis / Appel</a>
+      <a href="/checkout" class="nav-link nav-cta">Checkout</a>
     </nav>
 
     <div class="prefs">

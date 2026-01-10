@@ -9,6 +9,11 @@ $subtitle = (string)($subtitle ?? '');
 $id = (string)($id ?? '');
 $image = (string)($image ?? '');
 $bullets = $bullets ?? [];
+$detailsUrl = (string)($detailsUrl ?? '');
+$primaryCta = (string)($primaryCta ?? 'En savoir plus');
+$secondaryCta = (string)($secondaryCta ?? 'Commencer');
+$secondaryUrl = (string)($secondaryUrl ?? '/checkout');
+$showBookCall = (bool)($showBookCall ?? false);
 
 ?>
 <section class="page-section agent" id="<?= e($id) ?>">
@@ -25,8 +30,12 @@ $bullets = $bullets ?? [];
           </ul>
         </div>
         <div class="cta-row">
-          <a class="btn btn-primary" href="/#contact">Get a quote</a>
-          <a class="btn btn-ghost" href="/#contact">Book a call</a>
+          <a class="btn btn-primary" href="<?= e($detailsUrl) ?>"><?= e($primaryCta) ?></a>
+          <?php if ($showBookCall): ?>
+            <button class="btn btn-ghost" type="button" data-open-chat>Réserver un appel</button>
+          <?php else: ?>
+            <a class="btn btn-ghost" href="<?= e($secondaryUrl) ?>"><?= e($secondaryCta) ?></a>
+          <?php endif; ?>
         </div>
       </div>
 
