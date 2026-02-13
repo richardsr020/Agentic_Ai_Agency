@@ -37,6 +37,9 @@ $metaDescription = $page['meta_description'] ?? ($metaDescription ?? '');
   </main>
   <?= App\Core\View::partial('partials/chat-modal') ?>
   <?= App\Core\View::partial('partials/footer') ?>
+  <button class="chat-fab" type="button" data-open-chat aria-label="Ouvrir le chat avec Skill">
+    <span class="chat-fab-label">Parler à Skill</span>
+  </button>
   <script src="/assets/app.js" defer></script>
 </body>
 </html>

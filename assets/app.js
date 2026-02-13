@@ -10,28 +10,7 @@
   const chatForm = document.querySelector('[data-chat-form]');
   const chatInput = document.querySelector('[data-chat-input]');
 
-  const profile = {
-    name: null,
-    company: null,
-    role: null,
-    website: null,
-    need: null,
-    channels: null,
-    volume: null,
-    timeline: null,
-    budget: null,
-  };
-
-  const questions = [
-    { key: 'name', q: "Bonjour, je suis Skill. Comment vous appelez-vous ?" },
-    { key: 'company', q: 'Quel est le nom de votre entreprise ?' },
-    { key: 'role', q: 'Quel est votre rôle (ex: CEO, Sales, Support) ?' },
-    { key: 'need', q: 'Quel est votre objectif principal (support, RDV, prospection, autre) ?' },
-    { key: 'channels', q: 'Sur quels canaux voulez-vous automatiser (email, chat, WhatsApp, LinkedIn...) ?' },
-    { key: 'volume', q: 'Quel volume approx. (messages / leads) par semaine ?' },
-    { key: 'timeline', q: 'Quel délai souhaitez-vous pour démarrer ?' },
-    { key: 'budget', q: 'Avez-vous une fourchette de budget mensuel ? (optionnel)' },
-  ];
+  let isSending = false;
 
   // Hero slider (auto)
   const heroSlider = document.querySelector('[data-hero-slider]');
@@ -55,8 +34,10 @@
     modal.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
     document.body.classList.toggle('modal-open', isOpen);
     if (isOpen) {
-      requestAnimationFrame(() => {
-        if (chatInput) chatInput.focus();
+      loadChatHistory().then(() => {
+        requestAnimationFrame(() => {
+          if (chatInput) chatInput.focus();
+        });
       });
     }
   }
@@ -64,52 +45,106 @@
   function appendMessage({ from, text }) {
     if (!chatMessages) return;
     const row = document.createElement('div');
-    row.className = 'chat-row ' + (from === 'skill' ? 'from-skill' : 'from-user');
+    row.className = 'chat-row ' + (from === 'assistant' ? 'from-skill' : 'from-user');
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble';
     bubble.textContent = text;
     row.appendChild(bubble);
     chatMessages.appendChild(row);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return bubble;
   }
 
-  function resetChat() {
-    if (chatMessages) chatMessages.innerHTML = '';
-    currentQuestionIndex = 0;
-    Object.keys(profile).forEach((k) => (profile[k] = null));
-    appendMessage({ from: 'skill', text: questions[0].q });
+  async function typeIntoBubble(bubble, fullText) {
+    if (!bubble) return;
+    bubble.textContent = '';
+    const text = String(fullText || '');
+    return new Promise((resolve) => {
+      let i = 0;
+      const step = () => {
+        i += 1;
+        bubble.textContent = text.slice(0, i);
+        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (i < text.length) {
+          window.setTimeout(step, 14);
+        } else {
+          resolve();
+        }
+      };
+      step();
+    });
   }
 
-  function handleAnswer(value) {
-    const q = questions[currentQuestionIndex];
-    if (q) {
-      profile[q.key] = value;
+  async function loadChatHistory() {
+    try {
+      const res = await fetch('/api/chat/history');
+      const data = await res.json();
+      if (data.messages && Array.isArray(data.messages)) {
+        chatMessages.innerHTML = '';
+        const onlyOneAssistant = data.messages.length === 1 && data.messages[0].role !== 'user';
+        data.messages.forEach((msg, index) => {
+          const bubble = appendMessage({
+            from: msg.role === 'user' ? 'user' : 'assistant',
+            text: onlyOneAssistant && index === 0 ? '' : msg.content,
+          });
+          if (onlyOneAssistant && index === 0) {
+            typeIntoBubble(bubble, msg.content);
+          }
+        });
+      }
+    } catch (err) {
+      console.error('Error loading chat history:', err);
     }
-    currentQuestionIndex += 1;
-    if (currentQuestionIndex < questions.length) {
-      appendMessage({ from: 'skill', text: questions[currentQuestionIndex].q });
-      return;
-    }
+  }
 
-    const summary =
-      'Merci. Résumé rapide :\n' +
-      'Nom: ' + (profile.name || '-') + '\n' +
-      'Entreprise: ' + (profile.company || '-') + '\n' +
-      'Rôle: ' + (profile.role || '-') + '\n' +
-      'Objectif: ' + (profile.need || '-') + '\n' +
-      'Canaux: ' + (profile.channels || '-') + '\n' +
-      'Volume: ' + (profile.volume || '-') + '\n' +
-      'Délai: ' + (profile.timeline || '-') + '\n' +
-      'Budget: ' + (profile.budget || '-') + '\n' +
-      '\nJe peux maintenant vous orienter vers la meilleure mise en place.';
-    appendMessage({ from: 'skill', text: summary });
+  async function sendMessage(message) {
+    if (isSending) return;
+    isSending = true;
+
+    const loadingBubble = appendMessage({ from: 'assistant', text: '...' });
+    if (loadingBubble) loadingBubble.classList.add('is-loading');
+
+    try {
+      const res = await fetch('/api/chat/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await res.json();
+
+      if (loadingBubble && loadingBubble.parentElement) {
+        loadingBubble.parentElement.remove();
+      }
+
+      if (data.response) {
+        const bubble = appendMessage({ from: 'assistant', text: '' });
+        await typeIntoBubble(bubble, data.response);
+        if (data.redirect) {
+          window.setTimeout(() => {
+            window.location.href = data.redirect;
+          }, 650);
+        }
+      } else if (data.error) {
+        appendMessage({ from: 'assistant', text: 'Désolé, une erreur s\'est produite. Veuillez réessayer.' });
+      }
+    } catch (err) {
+      if (loadingBubble && loadingBubble.parentElement) {
+        loadingBubble.parentElement.remove();
+      }
+
+      appendMessage({ from: 'assistant', text: 'Erreur réseau. Veuillez réessayer.' });
+    } finally {
+      isSending = false;
+      if (chatInput) chatInput.disabled = false;
+    }
   }
 
   if (modal && openChatBtns.length) {
     openChatBtns.forEach((b) => {
       b.addEventListener('click', () => {
         setModalOpen(true);
-        resetChat();
       });
     });
   }
@@ -129,14 +164,17 @@
   });
 
   if (chatForm) {
-    chatForm.addEventListener('submit', (e) => {
+    chatForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!chatInput) return;
+      if (!chatInput || isSending) return;
       const value = (chatInput.value || '').trim();
       if (!value) return;
+      
       appendMessage({ from: 'user', text: value });
       chatInput.value = '';
-      setTimeout(() => handleAnswer(value), 200);
+      chatInput.disabled = true;
+      
+      await sendMessage(value);
     });
   }
 
@@ -199,6 +237,17 @@
     if (e.button !== 0) return;
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
+    const logoutEl = e.target && e.target.closest ? e.target.closest('[data-logout]') : null;
+    if (logoutEl) {
+      e.preventDefault();
+      fetch('/api/auth/logout', { method: 'POST' })
+        .catch(() => null)
+        .finally(() => {
+          window.location.href = '/';
+        });
+      return;
+    }
+
     const a = e.target && e.target.closest ? e.target.closest('a') : null;
     if (!a) return;
     const href = a.getAttribute('href');
@@ -206,11 +255,21 @@
 
     // Only intercept internal one-page anchors
     if (href.startsWith('/#') || href.startsWith('#')) {
-      const hash = href.startsWith('#') ? href : href.slice(1);
+      const isHomePage = window.location.pathname === '/' || window.location.pathname === '/index.php';
+      let hash = href.startsWith('#') ? href : href.slice(1);
+      
+      // If we're on another page and clicking a section link, redirect to homepage
+      if (!isHomePage) {
+        e.preventDefault();
+        window.location.href = '/' + hash;
+        return;
+      }
+      
+      // If we're on the homepage, just scroll to the section
       e.preventDefault();
-      history.pushState(null, '', href.startsWith('#') ? href : '#' + hash);
+      history.pushState(null, '', hash);
       document.body.classList.remove('nav-open');
-      scrollToHash('#' + hash, { behavior: 'smooth' });
+      scrollToHash(hash, { behavior: 'smooth' });
       return;
     }
   });
@@ -221,6 +280,17 @@
 
   // On load: if URL has a hash, jump to that section (after layout)
   window.addEventListener('load', () => {
+    if (modal) {
+      try {
+        const key = 'agentic_skill_modal_seen';
+        if (!window.localStorage.getItem(key)) {
+          window.localStorage.setItem(key, '1');
+          window.setTimeout(() => setModalOpen(true), 650);
+        }
+      } catch (err) {
+        window.setTimeout(() => setModalOpen(true), 650);
+      }
+    }
     if (window.location.hash) {
       scrollToHash(window.location.hash, { behavior: 'auto' });
     }

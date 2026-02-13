@@ -5,7 +5,7 @@ declare(strict_types=1);
 return [
     'app' => [
         'name' => 'Agentic_AI',
-        'base_url' => null,
+        'base_url' => 'nestcorporation.alwaysdata.net',
         'env' => 'prod',
         'timezone' => 'UTC',
         'cookie' => [
@@ -28,5 +28,14 @@ return [
         'driver' => 'sqlite',
         'database_path' => __DIR__ . '/../storage/app.sqlite',
         'migrations_path' => __DIR__ . '/../database/migrations',
+    ],
+    'gemini' => [
+        'api_key' => 'AIzaSyAsCbbZz24BEvYYML-VZTlAgbjvmjk-XHo',
+        'api_url' => 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent',
+    ],
+    'google_oauth' => [
+        'client_id' => '',
+        'client_secret' => '',
+        'redirect_uri' => '',
     ],
 ];

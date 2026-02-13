@@ -48,8 +48,9 @@ final class PageController
 
     public function contact(): string
     {
-        $this->redirectToSection('home');
-        return '';
+        return View::render('pages/contact', [
+            'page' => ['title' => 'Contact'],
+        ]);
     }
 
     public function agentSupport(): string

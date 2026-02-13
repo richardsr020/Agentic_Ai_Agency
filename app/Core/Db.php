@@ -39,6 +39,8 @@ final class Db
         self::$pdo->exec('PRAGMA foreign_keys = ON');
 
         self::migrate();
+
+        self::seedAdmin();
     }
 
     private static function migrate(): void
@@ -81,5 +83,37 @@ final class Db
                 throw $e;
             }
         }
+    }
+
+    private static function seedAdmin(): void
+    {
+        $pdo = self::pdo();
+
+        try {
+            $stmt = $pdo->query('SELECT COUNT(1) AS c FROM users');
+            $row = $stmt ? $stmt->fetch() : null;
+            $count = (int)($row['c'] ?? 0);
+        } catch (\Throwable $e) {
+            return;
+        }
+
+        if ($count > 0) {
+            return;
+        }
+
+        $email = 'admin@agentic-ai.local';
+        $passwordHash = password_hash('admin123456', PASSWORD_DEFAULT);
+        $now = gmdate('c');
+
+        $insert = $pdo->prepare('INSERT INTO users (email, password_hash, name, role, email_verified, created_at, updated_at) VALUES (:email, :password_hash, :name, :role, :email_verified, :created_at, :updated_at)');
+        $insert->execute([
+            ':email' => $email,
+            ':password_hash' => $passwordHash,
+            ':name' => 'Admin',
+            ':role' => 'admin',
+            ':email_verified' => 1,
+            ':created_at' => $now,
+            ':updated_at' => $now,
+        ]);
     }
 }

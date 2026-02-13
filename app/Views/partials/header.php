@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Core\I18n;
+use App\Core\Auth;
 use App\Core\Trans;
 use App\Core\Visitor;
 
@@ -26,11 +27,20 @@ $labels = [
     <a class="brand" href="/#home">Agentic_AI</a>
 
     <nav class="nav">
-      <a href="/#home" class="nav-link">Agents IA</a>
+      <a href="/#home" class="nav-link">Accueil</a>
       <a href="/#agent-support" class="nav-link">Service Client</a>
       <a href="/#agent-scheduling" class="nav-link">Rendez-vous</a>
       <a href="/#agent-prospecting" class="nav-link">Prospection</a>
-      <a href="/checkout" class="nav-link nav-cta">Checkout</a>
+      <a href="/contact" class="nav-link">Contact</a>
+      <?php if (Auth::isAdmin()): ?>
+        <a href="/admin" class="nav-link">Admin</a>
+      <?php endif; ?>
+      <?php if (Auth::check()): ?>
+        <a href="#" class="nav-link" data-logout>Se déconnecter</a>
+      <?php else: ?>
+        <a href="/auth/login" class="nav-link">Se connecter</a>
+        <a href="/auth/register" class="nav-link">S'inscrire</a>
+      <?php endif; ?>
     </nav>
 
     <div class="prefs">

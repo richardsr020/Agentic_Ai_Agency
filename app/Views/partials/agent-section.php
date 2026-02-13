@@ -12,7 +12,7 @@ $bullets = $bullets ?? [];
 $detailsUrl = (string)($detailsUrl ?? '');
 $primaryCta = (string)($primaryCta ?? 'En savoir plus');
 $secondaryCta = (string)($secondaryCta ?? 'Commencer');
-$secondaryUrl = (string)($secondaryUrl ?? '/checkout');
+// $secondaryUrl = (string)($secondaryUrl ?? '/checkout');
 $showBookCall = (bool)($showBookCall ?? false);
 
 ?>
@@ -34,7 +34,7 @@ $showBookCall = (bool)($showBookCall ?? false);
           <?php if ($showBookCall): ?>
             <button class="btn btn-ghost" type="button" data-open-chat>Réserver un appel</button>
           <?php else: ?>
-            <a class="btn btn-ghost" href="<?= e($secondaryUrl) ?>"><?= e($secondaryCta) ?></a>
+
           <?php endif; ?>
         </div>
       </div>

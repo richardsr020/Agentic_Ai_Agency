@@ -11,7 +11,7 @@ use App\Core\View;
     <div class="container hero-grid">
       <div class="hero-copy reveal">
         <h1>Des agents IA qui comprennent vos vrais besoins</h1>
-        <p class="lead">Discutez avec notre agent (Skill) pour qualifier votre demande, établir votre profil client et construire la solution adaptée — en quelques minutes.</p>
+        <p class="lead">Discutez avec notre agent <strong>(Skill)</strong> pour <strong>qualifier votre demande</strong>, <strong>établir votre profil client</strong> et <strong>construire la solution adaptée</strong> — en quelques minutes.</p>
         <div class="cta-row">
           <button class="btn btn-primary" type="button" data-open-chat>Discutons de vos besoins</button>
           <a class="btn btn-ghost" href="/#agent-support">Commencer</a>
@@ -20,9 +20,23 @@ use App\Core\View;
 
       <div class="hero-art reveal" aria-hidden="true">
         <div class="hero-illus" data-hero-slider>
-          <img class="hero-svg is-active" data-hero-slide src="/assets/images/business_growth.svg" alt="" />
-          <img class="hero-svg" data-hero-slide src="/assets/images/better_performance.svg" alt="" />
-          <img class="hero-svg" data-hero-slide src="/assets/images/setup_AI%20agent.svg" alt="" />
+          <?php
+          $imagesDir = dirname(__DIR__, 3) . '/assets/images';
+          $files = glob($imagesDir . '/*.svg') ?: [];
+          sort($files);
+          $slides = [];
+          foreach ($files as $f) {
+            $base = basename($f);
+            if (strtolower($base) === 'humain_support.svg') {
+              continue;
+            }
+            $slides[] = $base;
+          }
+          ?>
+
+          <?php foreach ($slides as $i => $base): ?>
+            <img class="hero-svg<?= $i === 0 ? ' is-active' : '' ?>" data-hero-slide src="/assets/images/<?= rawurlencode($base) ?>" alt="" />
+          <?php endforeach; ?>
         </div>
       </div>
     </div>
@@ -62,7 +76,6 @@ use App\Core\View;
     'subtitle' => '(AI Sales & Prospecting Agent)',
     'image' => '/assets/images/customer_seeker.svg',
     'detailsUrl' => '/agent-prospecting',
-    'showBookCall' => true,
     'bullets' => [
       'Identifie les prospects idéaux',
       'Contacte de manière personnalisée (LinkedIn, email)',
@@ -70,4 +83,16 @@ use App\Core\View;
       'Alimente le pipeline commercial sans spam',
     ],
   ]) ?>
+
+  <section class="page-section cta-final">
+    <div class="container">
+      <div class="cta-final-content reveal">
+        <h2>Prêt à transformer votre entreprise </h2>
+        <p class="lead">Discutez avec notre agent Skill pour qualifier votre demande et construire la solution adaptée à vos besoins.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" type="button" data-open-chat>Discutons de vos besoins</button>
+        </div>
+      </div>
+    </div>
+  </section>
 </article>

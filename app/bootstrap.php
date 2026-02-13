@@ -21,3 +21,4 @@ App\Core\App::setConfig(require __DIR__ . '/../config/config.php');
 
 App\Core\Db::init();
 App\Core\Visitor::boot();
+App\Core\Auth::init();
